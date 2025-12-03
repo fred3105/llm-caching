@@ -2,13 +2,14 @@
 Unit tests for Python SDK wrapper.
 """
 
-import pytest
 import tempfile
 from pathlib import Path
 from unittest.mock import MagicMock, Mock
 
-from llm_cache.wrapper.sdk import LLMCacheWrapper, cached
+import pytest
+
 from llm_cache.cache.sqlite_storage import SQLiteStorage
+from llm_cache.wrapper.sdk import LLMCacheWrapper, cached
 
 
 @pytest.fixture
@@ -152,7 +153,9 @@ class TestCaching:
         assert call_count == 1  # Function not called again
 
         # Different parameters - cache miss
-        result3 = wrapped(model="gpt-4", messages=[{"role": "user", "content": "different"}])
+        result3 = wrapped(
+            model="gpt-4", messages=[{"role": "user", "content": "different"}]
+        )
         assert result3["response"] == "call_2"
         assert call_count == 2
 
@@ -180,7 +183,7 @@ class TestCaching:
         result2 = wrapped(
             model="gpt-4",
             messages=[{"role": "user", "content": "test"}],
-            _cache_bypass=True
+            _cache_bypass=True,
         )
         assert call_count == 2  # Function called again despite same params
 
@@ -269,7 +272,9 @@ class TestDecoratorPattern:
         mock_llm_call.__module__ = "openai"
 
         # This should work but won't actually cache since we're using default storage
-        result = mock_llm_call(model="gpt-4", messages=[{"role": "user", "content": "test"}])
+        result = mock_llm_call(
+            model="gpt-4", messages=[{"role": "user", "content": "test"}]
+        )
         assert result["response"] == "test"
 
     def test_cached_decorator_with_args(self, temp_storage):
@@ -281,7 +286,9 @@ class TestDecoratorPattern:
 
         mock_llm_call.__module__ = "test"
 
-        result = mock_llm_call(model="gpt-4", messages=[{"role": "user", "content": "test"}])
+        result = mock_llm_call(
+            model="gpt-4", messages=[{"role": "user", "content": "test"}]
+        )
         assert result["response"] == "test"
 
     def test_wrap_method(self, temp_storage):
@@ -378,7 +385,7 @@ class TestIntegration:
                     {
                         "message": {
                             "role": "assistant",
-                            "content": f"Response {call_count}"
+                            "content": f"Response {call_count}",
                         }
                     }
                 ],
@@ -392,16 +399,14 @@ class TestIntegration:
 
         # First call
         response1 = wrapped(
-            model="gpt-4",
-            messages=[{"role": "user", "content": "Hello"}]
+            model="gpt-4", messages=[{"role": "user", "content": "Hello"}]
         )
         assert response1["id"] == "chatcmpl-1"
         assert call_count == 1
 
         # Same call - should hit cache
         response2 = wrapped(
-            model="gpt-4",
-            messages=[{"role": "user", "content": "Hello"}]
+            model="gpt-4", messages=[{"role": "user", "content": "Hello"}]
         )
         assert response2["id"] == "chatcmpl-1"  # Same response
         assert call_count == 1  # Not called again
@@ -410,7 +415,7 @@ class TestIntegration:
         response3 = wrapped(
             model="gpt-4",
             messages=[{"role": "user", "content": "Hello"}],
-            temperature=0.8
+            temperature=0.8,
         )
         assert response3["id"] == "chatcmpl-2"
         assert call_count == 2

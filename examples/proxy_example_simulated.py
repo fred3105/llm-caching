@@ -10,8 +10,9 @@ This script:
 
 import asyncio
 import time
-import httpx
 from contextlib import asynccontextmanager
+
+import httpx
 
 print("=" * 70)
 print("LLM Cache Proxy - Simulated Example")
@@ -31,9 +32,9 @@ async def make_request(base_url: str, prompt: str):
                 json={
                     "model": "gpt-4",
                     "messages": [{"role": "user", "content": prompt}],
-                    "temperature": 0.7
+                    "temperature": 0.7,
                 },
-                headers={"Authorization": "Bearer mock-api-key"}
+                headers={"Authorization": "Bearer mock-api-key"},
             )
             return response
         except httpx.ConnectError:
@@ -54,7 +55,8 @@ print("\n" + "=" * 70)
 print("How to Use the Proxy")
 print("=" * 70)
 
-print("""
+print(
+    """
 Step 1: Start the proxy server
 ----------------------------------------------------------------------
 In one terminal, run:
@@ -162,13 +164,15 @@ Example:
     X-Cache-Hit: true
     Content-Type: application/json
     ...
-""")
+"""
+)
 
 print("\n" + "=" * 70)
 print("Example Workflow")
 print("=" * 70)
 
-print("""
+print(
+    """
 Development Workflow:
 1. Start proxy: llm-cache-proxy
 2. Run your development code (tests, experiments, etc.)
@@ -187,13 +191,15 @@ Production Workflow:
 2. Use Redis for scalability
 3. Monitor cache hit rates
 4. Adjust max_size based on memory/disk
-""")
+"""
+)
 
 print("\n" + "=" * 70)
 print("Configuration")
 print("=" * 70)
 
-print("""
+print(
+    """
 Configure via environment variables or .env file:
 
 # SQLite (default - good for local dev)
@@ -210,11 +216,13 @@ LLM_CACHE_MAX_SIZE=10000
 # Proxy settings
 LLM_CACHE_PROXY_HOST=0.0.0.0
 LLM_CACHE_PROXY_PORT=8000
-""")
+"""
+)
 
 print("\n" + "=" * 70)
 print("Testing the Proxy")
 print("=" * 70)
+
 
 async def test_proxy():
     """Test if proxy is running."""
@@ -239,6 +247,7 @@ async def test_proxy():
             print("  $ uv run llm-cache-proxy")
             return False
 
+
 # Try to connect to proxy
 try:
     running = asyncio.run(test_proxy())
@@ -247,7 +256,8 @@ try:
         print("\n" + "=" * 70)
         print("Try It Out!")
         print("=" * 70)
-        print("""
+        print(
+            """
 The proxy is running! Try making a request:
 
     curl http://localhost:8000/v1/chat/completions \\
@@ -259,7 +269,8 @@ The proxy is running! Try making a request:
       }'
 
 Run it twice and watch the second request return instantly (cache hit)!
-        """)
+        """
+        )
 except Exception as e:
     print(f"\nNote: {e}")
 

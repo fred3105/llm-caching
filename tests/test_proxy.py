@@ -2,14 +2,15 @@
 Integration tests for HTTP proxy server.
 """
 
-import pytest
 import tempfile
 from pathlib import Path
-from fastapi.testclient import TestClient
-from unittest.mock import patch, AsyncMock
+from unittest.mock import AsyncMock, patch
 
-from llm_cache.proxy.server import app, storage
+import pytest
+from fastapi.testclient import TestClient
+
 from llm_cache.cache.sqlite_storage import SQLiteStorage
+from llm_cache.proxy.server import app, storage
 
 
 @pytest.fixture
@@ -80,7 +81,7 @@ class TestCacheManagement:
         key = generate_cache_key(
             provider="openai",
             model="gpt-4",
-            messages=[{"role": "user", "content": "test"}]
+            messages=[{"role": "user", "content": "test"}],
         )
         storage.set(key, {"test": "data"})
 
@@ -100,7 +101,7 @@ class TestCacheManagement:
         key = generate_cache_key(
             provider="openai",
             model="gpt-4",
-            messages=[{"role": "user", "content": "test"}]
+            messages=[{"role": "user", "content": "test"}],
         )
         storage.set(key, {"test": "data"})
 
@@ -123,8 +124,9 @@ class TestChatCompletionsEndpoint:
 
     def test_chat_completions_cache_miss(self, client):
         """Test cache miss - should forward to API."""
-        import httpx
         from unittest.mock import MagicMock
+
+        import httpx
 
         mock_response_data = {
             "id": "chatcmpl-123",
@@ -135,17 +137,17 @@ class TestChatCompletionsEndpoint:
                     "index": 0,
                     "message": {
                         "role": "assistant",
-                        "content": "Hello! How can I help you?"
+                        "content": "Hello! How can I help you?",
                     },
-                    "finish_reason": "stop"
+                    "finish_reason": "stop",
                 }
-            ]
+            ],
         }
 
         request_body = {
             "model": "gpt-4",
             "messages": [{"role": "user", "content": "Hello"}],
-            "temperature": 0.7
+            "temperature": 0.7,
         }
 
         # Mock the httpx client with proper async context manager support
@@ -159,14 +161,16 @@ class TestChatCompletionsEndpoint:
         with patch("httpx.AsyncClient") as mock_client_class:
             mock_client_instance = MagicMock()
             mock_client_instance.post = mock_post
-            mock_client_instance.__aenter__ = AsyncMock(return_value=mock_client_instance)
+            mock_client_instance.__aenter__ = AsyncMock(
+                return_value=mock_client_instance
+            )
             mock_client_instance.__aexit__ = AsyncMock(return_value=None)
             mock_client_class.return_value = mock_client_instance
 
             response = client.post(
                 "/v1/chat/completions",
                 json=request_body,
-                headers={"Authorization": "Bearer test-key"}
+                headers={"Authorization": "Bearer test-key"},
             )
 
             assert response.status_code == 200
@@ -182,19 +186,19 @@ class TestChatCompletionsEndpoint:
         request_body = {
             "model": "gpt-4",
             "messages": [{"role": "user", "content": "Hello"}],
-            "temperature": 0.7
+            "temperature": 0.7,
         }
 
         key = generate_cache_key(
             provider="openai",
             model="gpt-4",
             messages=[{"role": "user", "content": "Hello"}],
-            temperature=0.7
+            temperature=0.7,
         )
 
         cached_response = {
             "id": "cached-123",
-            "choices": [{"message": {"content": "Cached response"}}]
+            "choices": [{"message": {"content": "Cached response"}}],
         }
         storage.set(key, cached_response)
 
@@ -202,7 +206,7 @@ class TestChatCompletionsEndpoint:
         response = client.post(
             "/v1/chat/completions",
             json=request_body,
-            headers={"Authorization": "Bearer test-key"}
+            headers={"Authorization": "Bearer test-key"},
         )
 
         assert response.status_code == 200
@@ -212,27 +216,28 @@ class TestChatCompletionsEndpoint:
 
     def test_chat_completions_bypass_cache(self, client):
         """Test bypassing cache with X-Cache-Bypass header."""
-        from llm_cache.cache.key_generator import generate_cache_key
         from unittest.mock import MagicMock
+
+        from llm_cache.cache.key_generator import generate_cache_key
 
         # Pre-populate cache
         key = generate_cache_key(
             provider="openai",
             model="gpt-4",
             messages=[{"role": "user", "content": "Hello"}],
-            temperature=0.7
+            temperature=0.7,
         )
         storage.set(key, {"id": "cached-123"})
 
         mock_response_data = {
             "id": "fresh-123",
-            "choices": [{"message": {"content": "Fresh response"}}]
+            "choices": [{"message": {"content": "Fresh response"}}],
         }
 
         request_body = {
             "model": "gpt-4",
             "messages": [{"role": "user", "content": "Hello"}],
-            "temperature": 0.7
+            "temperature": 0.7,
         }
 
         async def mock_post(*args, **kwargs):
@@ -245,17 +250,16 @@ class TestChatCompletionsEndpoint:
         with patch("httpx.AsyncClient") as mock_client_class:
             mock_client_instance = MagicMock()
             mock_client_instance.post = mock_post
-            mock_client_instance.__aenter__ = AsyncMock(return_value=mock_client_instance)
+            mock_client_instance.__aenter__ = AsyncMock(
+                return_value=mock_client_instance
+            )
             mock_client_instance.__aexit__ = AsyncMock(return_value=None)
             mock_client_class.return_value = mock_client_instance
 
             response = client.post(
                 "/v1/chat/completions",
                 json=request_body,
-                headers={
-                    "Authorization": "Bearer test-key",
-                    "X-Cache-Bypass": "true"
-                }
+                headers={"Authorization": "Bearer test-key", "X-Cache-Bypass": "true"},
             )
 
             assert response.status_code == 200
@@ -267,7 +271,7 @@ class TestChatCompletionsEndpoint:
         response = client.post(
             "/v1/chat/completions",
             content="invalid json",
-            headers={"Content-Type": "application/json"}
+            headers={"Content-Type": "application/json"},
         )
         assert response.status_code == 400
 
@@ -277,7 +281,7 @@ class TestChatCompletionsEndpoint:
 
         request_body = {
             "model": "gpt-4",
-            "messages": [{"role": "user", "content": "Hello"}]
+            "messages": [{"role": "user", "content": "Hello"}],
         }
 
         mock_response_data = {"id": "test-123", "choices": []}
@@ -292,7 +296,9 @@ class TestChatCompletionsEndpoint:
         with patch("httpx.AsyncClient") as mock_client_class:
             mock_client_instance = MagicMock()
             mock_client_instance.post = mock_post
-            mock_client_instance.__aenter__ = AsyncMock(return_value=mock_client_instance)
+            mock_client_instance.__aenter__ = AsyncMock(
+                return_value=mock_client_instance
+            )
             mock_client_instance.__aexit__ = AsyncMock(return_value=None)
             mock_client_class.return_value = mock_client_instance
 
@@ -301,8 +307,8 @@ class TestChatCompletionsEndpoint:
                 json=request_body,
                 headers={
                     "Authorization": "Bearer test-key",
-                    "X-LLM-Provider": "openai"
-                }
+                    "X-LLM-Provider": "openai",
+                },
             )
 
             assert response.status_code == 200
@@ -320,13 +326,13 @@ class TestAnthropicEndpoint:
             "id": "msg_123",
             "type": "message",
             "role": "assistant",
-            "content": [{"type": "text", "text": "Hello from Claude!"}]
+            "content": [{"type": "text", "text": "Hello from Claude!"}],
         }
 
         request_body = {
             "model": "claude-sonnet-4.5",
             "messages": [{"role": "user", "content": "Hello"}],
-            "max_tokens": 1024
+            "max_tokens": 1024,
         }
 
         async def mock_post(*args, **kwargs):
@@ -339,17 +345,16 @@ class TestAnthropicEndpoint:
         with patch("httpx.AsyncClient") as mock_client_class:
             mock_client_instance = MagicMock()
             mock_client_instance.post = mock_post
-            mock_client_instance.__aenter__ = AsyncMock(return_value=mock_client_instance)
+            mock_client_instance.__aenter__ = AsyncMock(
+                return_value=mock_client_instance
+            )
             mock_client_instance.__aexit__ = AsyncMock(return_value=None)
             mock_client_class.return_value = mock_client_instance
 
             response = client.post(
                 "/v1/messages",
                 json=request_body,
-                headers={
-                    "x-api-key": "test-key",
-                    "anthropic-version": "2023-06-01"
-                }
+                headers={"x-api-key": "test-key", "anthropic-version": "2023-06-01"},
             )
 
             assert response.status_code == 200
@@ -365,26 +370,24 @@ class TestAnthropicEndpoint:
         request_body = {
             "model": "claude-sonnet-4.5",
             "messages": [{"role": "user", "content": "Hello"}],
-            "max_tokens": 1024
+            "max_tokens": 1024,
         }
 
         key = generate_cache_key(
             provider="anthropic",
             model="claude-sonnet-4.5",
             messages=[{"role": "user", "content": "Hello"}],
-            max_tokens=1024
+            max_tokens=1024,
         )
 
         cached_response = {
             "id": "cached-msg-123",
-            "content": [{"text": "Cached Claude response"}]
+            "content": [{"text": "Cached Claude response"}],
         }
         storage.set(key, cached_response)
 
         response = client.post(
-            "/v1/messages",
-            json=request_body,
-            headers={"x-api-key": "test-key"}
+            "/v1/messages", json=request_body, headers={"x-api-key": "test-key"}
         )
 
         assert response.status_code == 200
@@ -404,14 +407,14 @@ class TestCacheStatistics:
         key = generate_cache_key(
             provider="openai",
             model="gpt-4",
-            messages=[{"role": "user", "content": "test"}]
+            messages=[{"role": "user", "content": "test"}],
         )
         storage.set(key, {"response": "cached"})
 
         # Make a cache hit request
         request_body = {
             "model": "gpt-4",
-            "messages": [{"role": "user", "content": "test"}]
+            "messages": [{"role": "user", "content": "test"}],
         }
         client.post("/v1/chat/completions", json=request_body)
 

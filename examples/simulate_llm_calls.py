@@ -6,6 +6,7 @@ an LLM application and making repeated calls with the same prompts.
 """
 
 import time
+
 from llm_cache.cache.key_generator import generate_cache_key
 from llm_cache.cache.sqlite_storage import SQLiteStorage
 
@@ -16,6 +17,7 @@ print("=" * 70)
 # Initialize cache
 storage = SQLiteStorage(db_path="dev_cache.db", max_size=100)
 print(f"\nCache initialized (max_size=100)")
+
 
 # Simulate LLM API call (with artificial delay)
 def mock_llm_api_call(prompt: str, model: str = "gpt-4", temperature: float = 0.7):
@@ -28,12 +30,13 @@ def mock_llm_api_call(prompt: str, model: str = "gpt-4", temperature: float = 0.
             {
                 "message": {
                     "role": "assistant",
-                    "content": f"This is a mock response to: {prompt[:30]}..."
+                    "content": f"This is a mock response to: {prompt[:30]}...",
                 }
             }
         ],
-        "usage": {"prompt_tokens": 10, "completion_tokens": 20, "total_tokens": 30}
+        "usage": {"prompt_tokens": 10, "completion_tokens": 20, "total_tokens": 30},
     }
+
 
 def cached_llm_call(prompt: str, model: str = "gpt-4", temperature: float = 0.7):
     """LLM call with caching."""
@@ -42,7 +45,7 @@ def cached_llm_call(prompt: str, model: str = "gpt-4", temperature: float = 0.7)
         provider="openai",
         model=model,
         messages=[{"role": "user", "content": prompt}],
-        temperature=temperature
+        temperature=temperature,
     )
 
     # Check cache
@@ -54,13 +57,14 @@ def cached_llm_call(prompt: str, model: str = "gpt-4", temperature: float = 0.7)
     response = mock_llm_api_call(prompt, model, temperature)
 
     # Store in cache
-    storage.set(key, response, metadata={
-        "provider": "openai",
-        "model": model,
-        "timestamp": time.time()
-    })
+    storage.set(
+        key,
+        response,
+        metadata={"provider": "openai", "model": model, "timestamp": time.time()},
+    )
 
     return response, False  # Cache miss
+
 
 # Simulate development workflow
 print("\n" + "=" * 70)
@@ -108,7 +112,9 @@ print("=" * 70)
 print(f"\nTime saved by caching:")
 print(f"  Total time: {total_time:.2f}s")
 print(f"  Without cache (all API calls): {len(test_prompts):.2f}s")
-print(f"  Time saved: {len(test_prompts) - total_time:.2f}s ({((len(test_prompts) - total_time) / len(test_prompts) * 100):.0f}% faster)")
+print(
+    f"  Time saved: {len(test_prompts) - total_time:.2f}s ({((len(test_prompts) - total_time) / len(test_prompts) * 100):.0f}% faster)"
+)
 
 print(f"\nCache statistics:")
 stats = storage.get_stats()
@@ -121,18 +127,21 @@ print(f"  Entries cached: {stats['size']}")
 print("\n" + "=" * 70)
 print("Key Insight")
 print("=" * 70)
-print("""
+print(
+    """
 During development, you often test the same prompts repeatedly.
 With caching:
   - First run: 1 second per call (API latency)
   - Subsequent runs: < 1ms per call (cache hit)
 
 This dramatically speeds up your development iteration cycle!
-""")
+"""
+)
 
 # Clean up
 storage.clear()
 import os
+
 if os.path.exists("dev_cache.db"):
     os.remove("dev_cache.db")
     print("Demo database cleaned up")

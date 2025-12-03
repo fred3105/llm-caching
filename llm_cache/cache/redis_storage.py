@@ -88,9 +88,7 @@ class RedisStorage(CacheStorage):
     def _init_stats(self) -> None:
         """Initialize statistics tracking."""
         if not self.redis_client.exists(self.STATS_KEY):
-            self.redis_client.hset(
-                self.STATS_KEY, mapping={"hits": 0, "misses": 0}
-            )
+            self.redis_client.hset(self.STATS_KEY, mapping={"hits": 0, "misses": 0})
 
     def _update_stats(self, hit: bool) -> None:
         """Update hit/miss statistics."""
@@ -123,10 +121,7 @@ class RedisStorage(CacheStorage):
         return None
 
     def set(
-        self,
-        key: str,
-        value: Dict[str, Any],
-        metadata: Optional[Dict[str, Any]] = None
+        self, key: str, value: Dict[str, Any], metadata: Optional[Dict[str, Any]] = None
     ) -> None:
         """
         Store response with key.
@@ -251,9 +246,7 @@ class RedisStorage(CacheStorage):
         hit_rate = (hits / total_requests * 100) if total_requests > 0 else 0.0
 
         # Get oldest and newest entries from LRU set
-        oldest_entries = self.redis_client.zrange(
-            self.LRU_ZSET, 0, 0, withscores=True
-        )
+        oldest_entries = self.redis_client.zrange(self.LRU_ZSET, 0, 0, withscores=True)
         newest_entries = self.redis_client.zrange(
             self.LRU_ZSET, -1, -1, withscores=True
         )

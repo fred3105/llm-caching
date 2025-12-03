@@ -15,7 +15,7 @@ def generate_cache_key(
     messages: Union[List[Dict[str, Any]], str],
     temperature: Optional[float] = None,
     max_tokens: Optional[int] = None,
-    **kwargs: Any
+    **kwargs: Any,
 ) -> str:
     """
     Generate deterministic cache key from request parameters.
@@ -104,14 +104,11 @@ def generate_cache_key(
     # Sort keys for deterministic JSON serialization
     # Use separators without spaces for compact representation
     canonical_json = json.dumps(
-        key_data,
-        sort_keys=True,
-        separators=(',', ':'),
-        ensure_ascii=True
+        key_data, sort_keys=True, separators=(",", ":"), ensure_ascii=True
     )
 
     # Generate SHA256 hash
-    hash_bytes = hashlib.sha256(canonical_json.encode('utf-8')).hexdigest()
+    hash_bytes = hashlib.sha256(canonical_json.encode("utf-8")).hexdigest()
 
     return hash_bytes
 

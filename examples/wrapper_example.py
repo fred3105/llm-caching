@@ -16,7 +16,8 @@ print("\n" + "=" * 70)
 print("Example 1: Basic Wrapper Usage")
 print("=" * 70)
 
-print("""
+print(
+    """
 from llm_cache import LLMCacheWrapper
 
 # Create wrapper
@@ -48,14 +49,16 @@ response2 = cached_call(
     model="gpt-4",
     messages=[{"role": "user", "content": "Hello"}]
 )
-""")
+"""
+)
 
 # Example 2: Decorator pattern
 print("\n" + "=" * 70)
 print("Example 2: Decorator Pattern")
 print("=" * 70)
 
-print("""
+print(
+    """
 from llm_cache import cached
 
 # Simple decorator (no arguments)
@@ -78,14 +81,16 @@ def ask_gpt(prompt):
 # Usage
 response = ask_openai("What is caching?")  # First call: API
 response = ask_openai("What is caching?")  # Second call: cached!
-""")
+"""
+)
 
 # Example 3: Context manager
 print("\n" + "=" * 70)
 print("Example 3: Context Manager")
 print("=" * 70)
 
-print("""
+print(
+    """
 from llm_cache import LLMCacheWrapper
 
 # Use as context manager
@@ -101,7 +106,8 @@ with LLMCacheWrapper() as cache:
     stats = cache.get_stats()
     print(f"Cache hits: {stats['hits']}")
     print(f"Cache misses: {stats['misses']}")
-""")
+"""
+)
 
 # Example 4: Real usage with mock
 print("\n" + "=" * 70)
@@ -114,6 +120,7 @@ cache = LLMCacheWrapper()
 # Mock LLM function
 call_count = 0
 
+
 def mock_llm_api(model, messages, temperature=0.7):
     global call_count
     call_count += 1
@@ -124,11 +131,12 @@ def mock_llm_api(model, messages, temperature=0.7):
             {
                 "message": {
                     "role": "assistant",
-                    "content": f"Mock response #{call_count} to: {messages[0]['content']}"
+                    "content": f"Mock response #{call_count} to: {messages[0]['content']}",
                 }
             }
-        ]
+        ],
     }
+
 
 # Make it look like OpenAI for auto-detection
 mock_llm_api.__module__ = "openai.api_resources"
@@ -142,8 +150,7 @@ print("\nMaking LLM calls...")
 # First call
 print("\n1. First call (should hit API):")
 response1 = cached_llm(
-    model="gpt-4",
-    messages=[{"role": "user", "content": "What is Python?"}]
+    model="gpt-4", messages=[{"role": "user", "content": "What is Python?"}]
 )
 print(f"   Response ID: {response1['id']}")
 print(f"   Content: {response1['choices'][0]['message']['content']}")
@@ -152,8 +159,7 @@ print(f"   Total API calls: {call_count}")
 # Second call with same parameters (should hit cache)
 print("\n2. Second call with same params (should hit cache):")
 response2 = cached_llm(
-    model="gpt-4",
-    messages=[{"role": "user", "content": "What is Python?"}]
+    model="gpt-4", messages=[{"role": "user", "content": "What is Python?"}]
 )
 print(f"   Response ID: {response2['id']}")
 print(f"   Content: {response2['choices'][0]['message']['content']}")
@@ -162,8 +168,7 @@ print(f"   Total API calls: {call_count}  # Should still be 1!")
 # Third call with different parameters (should hit API)
 print("\n3. Third call with different params (should hit API):")
 response3 = cached_llm(
-    model="gpt-4",
-    messages=[{"role": "user", "content": "What is JavaScript?"}]
+    model="gpt-4", messages=[{"role": "user", "content": "What is JavaScript?"}]
 )
 print(f"   Response ID: {response3['id']}")
 print(f"   Content: {response3['choices'][0]['message']['content']}")
@@ -174,7 +179,7 @@ print("\n4. Fourth call with different temperature (should hit API):")
 response4 = cached_llm(
     model="gpt-4",
     messages=[{"role": "user", "content": "What is Python?"}],
-    temperature=0.9
+    temperature=0.9,
 )
 print(f"   Response ID: {response4['id']}")
 print(f"   Content: {response4['choices'][0]['message']['content']}")
@@ -200,7 +205,7 @@ print("\nBypassing cache with _cache_bypass=True...")
 response_bypass = cached_llm(
     model="gpt-4",
     messages=[{"role": "user", "content": "What is Python?"}],
-    _cache_bypass=True
+    _cache_bypass=True,
 )
 print(f"Response ID: {response_bypass['id']}")
 print(f"Total API calls: {call_count}  # Incremented even though params match!")
@@ -214,8 +219,7 @@ print("\nDisabling cache...")
 cache.disable()
 
 response_disabled = cached_llm(
-    model="gpt-4",
-    messages=[{"role": "user", "content": "What is Python?"}]
+    model="gpt-4", messages=[{"role": "user", "content": "What is Python?"}]
 )
 print(f"Response ID: {response_disabled['id']}")
 print(f"Total API calls: {call_count}  # Not cached!")
@@ -236,7 +240,8 @@ print("\n" + "=" * 70)
 print("Summary")
 print("=" * 70)
 
-print("""
+print(
+    """
 The Python SDK wrapper provides:
 
 1. ✓ Automatic provider detection (OpenAI, Anthropic, etc.)
@@ -282,13 +287,15 @@ Benefits:
 - Works offline after first call
 - Easy to enable/disable
 - Minimal code changes
-""")
+"""
+)
 
 print("\n" + "=" * 70)
 print("Next Steps")
 print("=" * 70)
 
-print("""
+print(
+    """
 To use with real OpenAI:
 
     from llm_cache import cached
@@ -322,4 +329,5 @@ For Anthropic Claude:
         )
 
 See examples/proxy_example_simulated.py for HTTP proxy usage.
-""")
+"""
+)

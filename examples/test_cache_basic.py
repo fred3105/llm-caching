@@ -28,7 +28,7 @@ key1 = generate_cache_key(
     provider="openai",
     model="gpt-4",
     messages=[{"role": "user", "content": "What is Python?"}],
-    temperature=0.7
+    temperature=0.7,
 )
 print(f"   Key 1: {key1[:16]}... (for 'What is Python?')")
 
@@ -36,7 +36,7 @@ key2 = generate_cache_key(
     provider="openai",
     model="gpt-4",
     messages=[{"role": "user", "content": "What is JavaScript?"}],
-    temperature=0.7
+    temperature=0.7,
 )
 print(f"   Key 2: {key2[:16]}... (for 'What is JavaScript?')")
 
@@ -44,7 +44,7 @@ key3 = generate_cache_key(
     provider="openai",
     model="gpt-4",
     messages=[{"role": "user", "content": "What is Python?"}],
-    temperature=0.7
+    temperature=0.7,
 )
 print(f"   Key 3: {key3[:16]}... (for 'What is Python?' again)")
 print(f"   Key 1 == Key 3: {key1 == key3} (deterministic!)")
@@ -58,10 +58,10 @@ response1 = {
         {
             "message": {
                 "role": "assistant",
-                "content": "Python is a high-level programming language..."
+                "content": "Python is a high-level programming language...",
             }
         }
-    ]
+    ],
 }
 
 response2 = {
@@ -70,10 +70,10 @@ response2 = {
         {
             "message": {
                 "role": "assistant",
-                "content": "JavaScript is a programming language for web development..."
+                "content": "JavaScript is a programming language for web development...",
             }
         }
-    ]
+    ],
 }
 
 storage.set(key1, response1, metadata={"provider": "openai", "model": "gpt-4"})
@@ -99,7 +99,7 @@ nonexistent_key = generate_cache_key(
     provider="openai",
     model="gpt-4",
     messages=[{"role": "user", "content": "Something not cached"}],
-    temperature=0.7
+    temperature=0.7,
 )
 result = storage.get(nonexistent_key)
 print(f"   Cache miss result: {result}")
@@ -121,11 +121,16 @@ key4 = generate_cache_key(
     provider="openai",
     model="gpt-4",
     messages=[{"role": "user", "content": "What is Rust?"}],
-    temperature=0.7
+    temperature=0.7,
 )
 response4 = {
     "choices": [
-        {"message": {"role": "assistant", "content": "Rust is a systems programming language..."}}
+        {
+            "message": {
+                "role": "assistant",
+                "content": "Rust is a systems programming language...",
+            }
+        }
     ]
 }
 storage.set(key4, response4)
@@ -140,11 +145,16 @@ key5 = generate_cache_key(
     provider="openai",
     model="gpt-4",
     messages=[{"role": "user", "content": "What is Go?"}],
-    temperature=0.7
+    temperature=0.7,
 )
 response5 = {
     "choices": [
-        {"message": {"role": "assistant", "content": "Go is a programming language by Google..."}}
+        {
+            "message": {
+                "role": "assistant",
+                "content": "Go is a programming language by Google...",
+            }
+        }
     ]
 }
 storage.set(key5, response5)
@@ -174,6 +184,7 @@ print("=" * 60)
 
 # Clean up demo database
 import os
+
 if os.path.exists("demo_cache.db"):
     os.remove("demo_cache.db")
     print("Demo database removed")

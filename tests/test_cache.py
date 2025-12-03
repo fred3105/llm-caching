@@ -4,8 +4,9 @@ Unit tests for cache layer (key generation, SQLite storage, configuration).
 
 import os
 import tempfile
-import pytest
 from pathlib import Path
+
+import pytest
 
 from llm_cache.cache.key_generator import generate_cache_key, normalize_request_params
 from llm_cache.cache.sqlite_storage import SQLiteStorage
@@ -21,13 +22,13 @@ class TestKeyGenerator:
             provider="openai",
             model="gpt-4",
             messages=[{"role": "user", "content": "Hello"}],
-            temperature=0.7
+            temperature=0.7,
         )
         key2 = generate_cache_key(
             provider="openai",
             model="gpt-4",
             messages=[{"role": "user", "content": "Hello"}],
-            temperature=0.7
+            temperature=0.7,
         )
         assert key1 == key2
         assert len(key1) == 64  # SHA256 produces 64 hex characters
@@ -52,13 +53,13 @@ class TestKeyGenerator:
             provider="openai",
             model="gpt-4",
             messages=[{"role": "user", "content": "Hello"}],
-            temperature=0.7
+            temperature=0.7,
         )
         key2 = generate_cache_key(
             provider="openai",
             model="gpt-4",
             messages=[{"role": "user", "content": "Hello"}],
-            temperature=0.8
+            temperature=0.8,
         )
         assert key1 != key2
 
@@ -110,13 +111,13 @@ class TestKeyGenerator:
             provider="openai",
             model="gpt-4",
             messages=[{"role": "user", "content": "Hello"}],
-            top_p=0.9
+            top_p=0.9,
         )
         key2 = generate_cache_key(
             provider="openai",
             model="gpt-4",
             messages=[{"role": "user", "content": "Hello"}],
-            top_p=0.95
+            top_p=0.95,
         )
         assert key1 != key2
 

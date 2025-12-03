@@ -3,8 +3,9 @@ Example demonstrating configuration and storage backend usage.
 """
 
 import os
-from llm_cache.config import Config
+
 from llm_cache.cache.sqlite_storage import SQLiteStorage
+from llm_cache.config import Config
 
 print("=" * 70)
 print("LLM Cache - Configuration Example")
@@ -39,6 +40,7 @@ print("-" * 70)
 
 config_dict = config.to_dict()
 import json
+
 print(json.dumps(config_dict, indent=2))
 
 # Example 4: Demonstrate environment variable override
@@ -60,10 +62,7 @@ print("\n5. Direct Storage Usage (without Config)")
 print("-" * 70)
 
 # You can also create storage directly
-custom_storage = SQLiteStorage(
-    db_path="custom_cache.db",
-    max_size=500
-)
+custom_storage = SQLiteStorage(db_path="custom_cache.db", max_size=500)
 
 print(f"Created custom storage:")
 print(f"  Path: custom_cache.db")
@@ -95,7 +94,8 @@ print(f"Hit rate: {stats['hit_rate']}%")
 print("\n" + "=" * 70)
 print("Configuration Tips")
 print("=" * 70)
-print("""
+print(
+    """
 Development (Local):
   - Use SQLite (default)
   - Small max_size (100-1000 entries)
@@ -112,13 +112,15 @@ Example .env for production:
   LLM_CACHE_REDIS_PASSWORD=your_password
   LLM_CACHE_MAX_SIZE=10000
   LLM_CACHE_PROXY_PORT=8000
-""")
+"""
+)
 
 # Clean up
 storage.clear()
 custom_storage.clear()
 
 import os
+
 if os.path.exists("llm_cache.db"):
     os.remove("llm_cache.db")
 if os.path.exists("custom_cache.db"):

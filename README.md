@@ -668,7 +668,7 @@ git clone https://github.com/yourusername/llm-cache.git
 cd llm-cache
 
 # Install development dependencies
-uv sync
+uv sync --extra dev
 
 # Install pre-commit hooks (optional)
 pre-commit install

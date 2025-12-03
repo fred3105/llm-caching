@@ -5,11 +5,11 @@ Provides file-based caching with LRU eviction, ideal for local development
 and single-instance deployments.
 """
 
-import sqlite3
 import json
+import sqlite3
 from datetime import datetime
-from typing import Any, Dict, Optional
 from pathlib import Path
+from typing import Any, Dict, Optional
 
 from llm_cache.cache.storage import CacheStorage
 
@@ -68,7 +68,8 @@ class SQLiteStorage(CacheStorage):
         cursor = conn.cursor()
 
         # Create main cache table
-        cursor.execute("""
+        cursor.execute(
+            """
             CREATE TABLE IF NOT EXISTS cache (
                 key TEXT PRIMARY KEY,
                 value TEXT NOT NULL,
@@ -77,27 +78,34 @@ class SQLiteStorage(CacheStorage):
                 access_count INTEGER DEFAULT 1,
                 metadata TEXT
             )
-        """)
+        """
+        )
 
         # Create index on last_accessed for efficient LRU queries
-        cursor.execute("""
+        cursor.execute(
+            """
             CREATE INDEX IF NOT EXISTS idx_last_accessed
             ON cache(last_accessed)
-        """)
+        """
+        )
 
         # Create statistics table
-        cursor.execute("""
+        cursor.execute(
+            """
             CREATE TABLE IF NOT EXISTS stats (
                 key TEXT PRIMARY KEY,
                 value INTEGER DEFAULT 0
             )
-        """)
+        """
+        )
 
         # Initialize stats if not exists
-        cursor.execute("""
+        cursor.execute(
+            """
             INSERT OR IGNORE INTO stats (key, value)
             VALUES ('hits', 0), ('misses', 0)
-        """)
+        """
+        )
 
         conn.commit()
         conn.close()
@@ -113,8 +121,8 @@ class SQLiteStorage(CacheStorage):
         cursor.execute("SELECT key, value FROM stats")
         stats = dict(cursor.fetchall())
 
-        self._hits = stats.get('hits', 0)
-        self._misses = stats.get('misses', 0)
+        self._hits = stats.get("hits", 0)
+        self._misses = stats.get("misses", 0)
 
         conn.close()
 
@@ -122,17 +130,14 @@ class SQLiteStorage(CacheStorage):
         """Update hit/miss statistics."""
         if hit:
             self._hits += 1
-            stat_key = 'hits'
+            stat_key = "hits"
         else:
             self._misses += 1
-            stat_key = 'misses'
+            stat_key = "misses"
 
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
-        cursor.execute(
-            "UPDATE stats SET value = value + 1 WHERE key = ?",
-            (stat_key,)
-        )
+        cursor.execute("UPDATE stats SET value = value + 1 WHERE key = ?", (stat_key,))
         conn.commit()
         conn.close()
 
@@ -151,10 +156,7 @@ class SQLiteStorage(CacheStorage):
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
-        cursor.execute(
-            "SELECT value FROM cache WHERE key = ?",
-            (key,)
-        )
+        cursor.execute("SELECT value FROM cache WHERE key = ?", (key,))
         row = cursor.fetchone()
         conn.close()
 
@@ -167,10 +169,7 @@ class SQLiteStorage(CacheStorage):
         return None
 
     def set(
-        self,
-        key: str,
-        value: Dict[str, Any],
-        metadata: Optional[Dict[str, Any]] = None
+        self, key: str, value: Dict[str, Any], metadata: Optional[Dict[str, Any]] = None
     ) -> None:
         """
         Store response with key.
@@ -193,11 +192,14 @@ class SQLiteStorage(CacheStorage):
         value_json = json.dumps(value)
         metadata_json = json.dumps(metadata or {})
 
-        cursor.execute("""
+        cursor.execute(
+            """
             INSERT OR REPLACE INTO cache
             (key, value, created_at, last_accessed, access_count, metadata)
             VALUES (?, ?, ?, ?, 1, ?)
-        """, (key, value_json, now, now, metadata_json))
+        """,
+            (key, value_json, now, now, metadata_json),
+        )
 
         conn.commit()
         conn.close()
@@ -234,11 +236,14 @@ class SQLiteStorage(CacheStorage):
         cursor = conn.cursor()
 
         now = datetime.now().timestamp()
-        cursor.execute("""
+        cursor.execute(
+            """
             UPDATE cache
             SET last_accessed = ?, access_count = access_count + 1
             WHERE key = ?
-        """, (now, key))
+        """,
+            (now, key),
+        )
 
         conn.commit()
         conn.close()
@@ -253,11 +258,13 @@ class SQLiteStorage(CacheStorage):
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
-        cursor.execute("""
+        cursor.execute(
+            """
             SELECT key FROM cache
             ORDER BY last_accessed ASC
             LIMIT 1
-        """)
+        """
+        )
         row = cursor.fetchone()
         conn.close()
 
@@ -303,17 +310,21 @@ class SQLiteStorage(CacheStorage):
         size = self.get_size()
 
         # Get oldest and newest entries
-        cursor.execute("""
+        cursor.execute(
+            """
             SELECT
                 MIN(created_at) as oldest,
                 MAX(created_at) as newest,
                 MIN(last_accessed) as oldest_access,
                 MAX(last_accessed) as newest_access
             FROM cache
-        """)
+        """
+        )
         row = cursor.fetchone()
 
-        oldest, newest, oldest_access, newest_access = row if row else (None, None, None, None)
+        oldest, newest, oldest_access, newest_access = (
+            row if row else (None, None, None, None)
+        )
 
         conn.close()
 
@@ -328,10 +339,22 @@ class SQLiteStorage(CacheStorage):
             "misses": self._misses,
             "total_requests": total_requests,
             "hit_rate": round(hit_rate, 2),
-            "oldest_entry": datetime.fromtimestamp(oldest).isoformat() if oldest else None,
-            "newest_entry": datetime.fromtimestamp(newest).isoformat() if newest else None,
-            "oldest_access": datetime.fromtimestamp(oldest_access).isoformat() if oldest_access else None,
-            "newest_access": datetime.fromtimestamp(newest_access).isoformat() if newest_access else None,
+            "oldest_entry": (
+                datetime.fromtimestamp(oldest).isoformat() if oldest else None
+            ),
+            "newest_entry": (
+                datetime.fromtimestamp(newest).isoformat() if newest else None
+            ),
+            "oldest_access": (
+                datetime.fromtimestamp(oldest_access).isoformat()
+                if oldest_access
+                else None
+            ),
+            "newest_access": (
+                datetime.fromtimestamp(newest_access).isoformat()
+                if newest_access
+                else None
+            ),
         }
 
     def get_all_keys(self) -> list[str]:

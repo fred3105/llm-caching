@@ -7,8 +7,9 @@ This script tests the proxy by:
 3. Testing the root endpoint
 """
 
-import httpx
 import sys
+
+import httpx
 
 PROXY_URL = "http://localhost:8000"
 

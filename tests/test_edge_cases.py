@@ -2,18 +2,19 @@
 Comprehensive edge case and error handling tests for robustness.
 """
 
-import pytest
-import tempfile
 import json
-from pathlib import Path
-from unittest.mock import Mock, patch, MagicMock
+import tempfile
 import threading
 import time
+from pathlib import Path
+from unittest.mock import MagicMock, Mock, patch
 
-from llm_cache.cache.sqlite_storage import SQLiteStorage
+import pytest
+
 from llm_cache.cache.key_generator import generate_cache_key
-from llm_cache.wrapper.sdk import LLMCacheWrapper
+from llm_cache.cache.sqlite_storage import SQLiteStorage
 from llm_cache.config import Config
+from llm_cache.wrapper.sdk import LLMCacheWrapper
 
 
 @pytest.fixture
@@ -40,7 +41,7 @@ class TestCacheKeyEdgeCases:
         key = generate_cache_key(
             provider="openai",
             model="gpt-4",
-            messages=[{"role": "user", "content": long_message}]
+            messages=[{"role": "user", "content": long_message}],
         )
 
         # Should still generate valid SHA256 hash
@@ -55,18 +56,14 @@ class TestCacheKeyEdgeCases:
         ]
 
         key = generate_cache_key(
-            provider="openai",
-            model="gpt-4",
-            messages=unicode_messages
+            provider="openai", model="gpt-4", messages=unicode_messages
         )
 
         assert len(key) == 64
 
         # Same input should produce same key
         key2 = generate_cache_key(
-            provider="openai",
-            model="gpt-4",
-            messages=unicode_messages
+            provider="openai", model="gpt-4", messages=unicode_messages
         )
         assert key == key2
 
@@ -76,22 +73,12 @@ class TestCacheKeyEdgeCases:
             {
                 "role": "user",
                 "content": "test",
-                "metadata": {
-                    "nested": {
-                        "deeply": {
-                            "very": {
-                                "deep": "value"
-                            }
-                        }
-                    }
-                }
+                "metadata": {"nested": {"deeply": {"very": {"deep": "value"}}}},
             }
         ]
 
         key = generate_cache_key(
-            provider="openai",
-            model="gpt-4",
-            messages=nested_messages
+            provider="openai", model="gpt-4", messages=nested_messages
         )
 
         assert len(key) == 64
@@ -101,18 +88,14 @@ class TestCacheKeyEdgeCases:
         key = generate_cache_key(
             provider="openai",
             model="gpt-4-32k-0613",
-            messages=[{"role": "user", "content": "test"}]
+            messages=[{"role": "user", "content": "test"}],
         )
 
         assert len(key) == 64
 
     def test_empty_messages(self):
         """Test cache key generation with empty messages list."""
-        key = generate_cache_key(
-            provider="openai",
-            model="gpt-4",
-            messages=[]
-        )
+        key = generate_cache_key(provider="openai", model="gpt-4", messages=[])
 
         assert len(key) == 64
 
@@ -122,14 +105,14 @@ class TestCacheKeyEdgeCases:
             provider="openai",
             model="gpt-4",
             messages=[{"role": "user", "content": "test"}],
-            temperature=0.7
+            temperature=0.7,
         )
 
         key2 = generate_cache_key(
             provider="openai",
             model="gpt-4",
             messages=[{"role": "user", "content": "test"}],
-            temperature=0.70000001
+            temperature=0.70000001,
         )
 
         # Should be different due to different values
@@ -141,13 +124,13 @@ class TestCacheKeyEdgeCases:
             provider="openai",
             model="gpt-4",
             messages=[{"role": "user", "content": "test"}],
-            temperature=None
+            temperature=None,
         )
 
         key2 = generate_cache_key(
             provider="openai",
             model="gpt-4",
-            messages=[{"role": "user", "content": "test"}]
+            messages=[{"role": "user", "content": "test"}],
         )
 
         # Should generate same key
@@ -161,11 +144,7 @@ class TestStorageEdgeCases:
         """Test behavior when cache is exactly at max size."""
         # Fill cache to exactly max_size
         for i in range(temp_storage.max_size):
-            temp_storage.set(
-                f"key_{i}",
-                {"data": f"value_{i}"},
-                metadata={"index": i}
-            )
+            temp_storage.set(f"key_{i}", {"data": f"value_{i}"}, metadata={"index": i})
 
         assert temp_storage.get_size() == temp_storage.max_size
 
@@ -182,13 +161,7 @@ class TestStorageEdgeCases:
     def test_very_large_response(self, temp_storage):
         """Test caching very large responses."""
         large_response = {
-            "choices": [
-                {
-                    "message": {
-                        "content": "x" * 1000000  # 1MB of data
-                    }
-                }
-            ]
+            "choices": [{"message": {"content": "x" * 1000000}}]  # 1MB of data
         }
 
         temp_storage.set("large_key", large_response)
@@ -204,10 +177,7 @@ class TestStorageEdgeCases:
         def writer(key_prefix, count):
             try:
                 for i in range(count):
-                    temp_storage.set(
-                        f"{key_prefix}_{i}",
-                        {"data": f"value_{i}"}
-                    )
+                    temp_storage.set(f"{key_prefix}_{i}", {"data": f"value_{i}"})
             except Exception as e:
                 errors.append(e)
 
@@ -377,7 +347,9 @@ class TestWrapperEdgeCases:
         wrapped = wrapper.wrap(unknown_func)
 
         # Should still work with "unknown" provider
-        result = wrapped(model="test-model", messages=[{"role": "user", "content": "test"}])
+        result = wrapped(
+            model="test-model", messages=[{"role": "user", "content": "test"}]
+        )
         assert result == {"result": "test"}
 
     def test_disable_enable_multiple_times(self, temp_storage):
@@ -428,13 +400,13 @@ class TestConfigEdgeCases:
 
     def test_invalid_backend_raises_error(self):
         """Test that invalid backend raises ValueError."""
-        with patch.dict('os.environ', {'LLM_CACHE_BACKEND': 'invalid'}):
+        with patch.dict("os.environ", {"LLM_CACHE_BACKEND": "invalid"}):
             with pytest.raises(ValueError, match="Invalid LLM_CACHE_BACKEND"):
                 Config()
 
     def test_missing_env_vars_use_defaults(self):
         """Test that missing environment variables use defaults."""
-        with patch.dict('os.environ', {}, clear=True):
+        with patch.dict("os.environ", {}, clear=True):
             config = Config()
 
             assert config.backend == "sqlite"
@@ -443,13 +415,13 @@ class TestConfigEdgeCases:
 
     def test_invalid_max_size_uses_default(self):
         """Test that invalid max_size values use defaults."""
-        with patch.dict('os.environ', {'LLM_CACHE_MAX_SIZE': 'not_a_number'}):
+        with patch.dict("os.environ", {"LLM_CACHE_MAX_SIZE": "not_a_number"}):
             with pytest.raises(ValueError):
                 Config()
 
     def test_negative_max_size_raises_error(self):
         """Test that negative max_size raises ValueError."""
-        with patch.dict('os.environ', {'LLM_CACHE_MAX_SIZE': '-10'}):
+        with patch.dict("os.environ", {"LLM_CACHE_MAX_SIZE": "-10"}):
             with pytest.raises(ValueError, match="LLM_CACHE_MAX_SIZE must be positive"):
                 Config()
 
@@ -459,11 +431,14 @@ class TestRedisEdgeCases:
 
     def test_redis_connection_failure_handling(self):
         """Test graceful handling of Redis connection failures."""
-        with patch.dict('os.environ', {
-            'LLM_CACHE_BACKEND': 'redis',
-            'LLM_CACHE_REDIS_HOST': 'nonexistent-host',
-            'LLM_CACHE_REDIS_PORT': '9999'
-        }):
+        with patch.dict(
+            "os.environ",
+            {
+                "LLM_CACHE_BACKEND": "redis",
+                "LLM_CACHE_REDIS_HOST": "nonexistent-host",
+                "LLM_CACHE_REDIS_PORT": "9999",
+            },
+        ):
             config = Config()
 
             # Should handle connection error gracefully

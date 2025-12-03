@@ -6,8 +6,8 @@ Config class for accessing all settings.
 """
 
 import os
-from typing import Optional
 from pathlib import Path
+from typing import Optional
 
 from dotenv import load_dotenv
 
@@ -60,10 +60,7 @@ class Config:
             )
 
         # SQLite configuration
-        self.sqlite_path = os.getenv(
-            "LLM_CACHE_SQLITE_PATH",
-            "./llm_cache.db"
-        )
+        self.sqlite_path = os.getenv("LLM_CACHE_SQLITE_PATH", "./llm_cache.db")
 
         # Redis configuration
         self.redis_host = os.getenv("LLM_CACHE_REDIS_HOST", "localhost")
@@ -112,15 +109,12 @@ class Config:
                 port=self.redis_port,
                 db=self.redis_db,
                 password=self.redis_password,
-                max_size=self.max_size
+                max_size=self.max_size,
             )
         else:  # Default to SQLite
             from llm_cache.cache.sqlite_storage import SQLiteStorage
 
-            return SQLiteStorage(
-                db_path=self.sqlite_path,
-                max_size=self.max_size
-            )
+            return SQLiteStorage(db_path=self.sqlite_path, max_size=self.max_size)
 
     def __repr__(self) -> str:
         """String representation of configuration."""
