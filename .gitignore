@@ -2,6 +2,7 @@
 __pycache__/
 *.py[cod]
 *$py.class
+llm_cache.db
 
 # C extensions
 *.so
