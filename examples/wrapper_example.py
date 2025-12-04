@@ -5,7 +5,7 @@ This shows how to use the LLMCacheWrapper for direct integration
 without needing an HTTP proxy.
 """
 
-from llm_cache import LLMCacheWrapper, cached
+from llm_cache import LLMCacheWrapper
 
 print("=" * 70)
 print("Python SDK Wrapper Examples")

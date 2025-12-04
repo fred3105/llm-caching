@@ -1,5 +1,5 @@
 # Multi-stage build for smaller final image
-FROM python:3.11-slim as builder
+FROM python:3.13-slim as builder
 
 # Install uv
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
@@ -14,7 +14,7 @@ COPY pyproject.toml ./
 RUN uv sync --no-dev --no-install-project
 
 # Final stage
-FROM python:3.11-slim
+FROM python:3.13-slim
 
 # Set working directory
 WORKDIR /app
@@ -26,6 +26,7 @@ COPY --from=builder /app/.venv /app/.venv
 # Copy application code
 COPY llm_cache ./llm_cache
 COPY pyproject.toml ./
+COPY README.md ./
 
 # Install the package
 RUN uv pip install --system -e .

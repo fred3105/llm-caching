@@ -7,7 +7,7 @@ name = "llm-cache"
 version = "0.1.0"
 description = "Cache LLM API calls to speed up development and prevent rate limits"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 license = {text = "MIT"}
 authors = [
     {name = "Frederic Legrand"}
@@ -18,11 +18,11 @@ classifiers = [
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
 ]
 
 dependencies = [
@@ -51,7 +51,7 @@ packages = ["llm_cache"]
 
 [tool.black]
 line-length = 88
-target-version = ['py38']
+target-version = ['py313']
 
 [tool.isort]
 profile = "black"

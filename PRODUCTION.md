@@ -61,7 +61,7 @@ For custom deployments without Docker:
 
 ### Prerequisites
 
-- Python 3.8+
+- Python 3.9+
 - Redis 6.0+
 - uv (for dependency management)
 
