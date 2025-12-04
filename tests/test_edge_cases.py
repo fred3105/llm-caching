@@ -368,20 +368,20 @@ class TestWrapperEdgeCases:
         wrapped = wrapper.wrap(test_func)
 
         # Enabled - should cache
-        result1 = wrapped(model="gpt-4", messages=[{"role": "user", "content": "test"}])
+        wrapped(model="gpt-4", messages=[{"role": "user", "content": "test"}])
         assert call_count == 1
 
-        result2 = wrapped(model="gpt-4", messages=[{"role": "user", "content": "test"}])
+        wrapped(model="gpt-4", messages=[{"role": "user", "content": "test"}])
         assert call_count == 1  # Cached
 
         # Disable
         wrapper.disable()
-        result3 = wrapped(model="gpt-4", messages=[{"role": "user", "content": "test"}])
+        wrapped(model="gpt-4", messages=[{"role": "user", "content": "test"}])
         assert call_count == 2  # Not cached
 
         # Enable again
         wrapper.enable()
-        result4 = wrapped(model="gpt-4", messages=[{"role": "user", "content": "test"}])
+        wrapped(model="gpt-4", messages=[{"role": "user", "content": "test"}])
         assert call_count == 2  # From cache again
 
     def test_context_manager_with_exception(self, temp_storage):
@@ -481,14 +481,14 @@ class TestIntegrationEdgeCases:
         assert call_count == 1
 
         # Second call - cached
-        result2 = wrapped(model="gpt-4", messages=[{"role": "user", "content": "test"}])
+        wrapped(model="gpt-4", messages=[{"role": "user", "content": "test"}])
         assert call_count == 1
 
         # Clear cache
         wrapper.clear_cache()
 
         # Third call - should hit API again
-        result3 = wrapped(model="gpt-4", messages=[{"role": "user", "content": "test"}])
+        wrapped(model="gpt-4", messages=[{"role": "user", "content": "test"}])
         assert call_count == 2
 
     def test_stats_accuracy_under_load(self, temp_storage):
