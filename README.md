@@ -2,7 +2,7 @@
 
 A high-performance caching system for LLM (Large Language Model) API calls that dramatically speeds up development iteration and reduces costs.
 
-[![Tests](https://github.com/fred3105/llm-cache/workflows/CI/badge.svg)](https://github.com/fred3105/llm-cache/actions)
+[![Tests](https://github.com/fred3105/llm-caching/workflows/CI/badge.svg)](https://github.com/fred3105/llm-caching/actions)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -46,8 +46,8 @@ Using [uv](https://github.com/astral-sh/uv) (recommended):
 
 ```bash
 # Clone the repository
-git clone https://github.com/fred3105/llm-cache.git
-cd llm-cache
+git clone https://github.com/fred3105/llm-caching.git
+cd llm-caching
 
 # Install dependencies with uv
 uv sync
@@ -334,21 +334,21 @@ Build and run:
 
 ```bash
 # Build image
-docker build -t llm-cache .
+docker build -t llm-caching .
 
 # Run with SQLite
 docker run -p 8000:8000 \
   -v $(pwd)/cache:/app/cache \
   -e LLM_CACHE_BACKEND=sqlite \
   -e LLM_CACHE_SQLITE_PATH=/app/cache/llm_cache.db \
-  llm-cache
+  llm-caching
 
 # Run with Redis
 docker run -p 8000:8000 \
   -e LLM_CACHE_BACKEND=redis \
   -e LLM_CACHE_REDIS_HOST=redis.example.com \
   -e LLM_CACHE_REDIS_PASSWORD=secret \
-  llm-cache
+  llm-caching
 ```
 
 ### Using Docker Compose
@@ -664,8 +664,8 @@ Contributions are welcome! Please:
 
 ```bash
 # Clone repository
-git clone https://github.com/fred3105/llm-cache.git
-cd llm-cache
+git clone https://github.com/fred3105/llm-caching.git
+cd llm-caching
 
 # Install development dependencies
 uv sync --extra dev
@@ -696,8 +696,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Support
 
-- **Issues**: [GitHub Issues](https://github.com/fred3105/llm-cache/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/fred3105/llm-cache/discussions)
+- **Issues**: [GitHub Issues](https://github.com/fred3105/llm-caching/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/fred3105/llm-caching/discussions)
 
 ## Roadmap
 

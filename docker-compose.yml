@@ -1,8 +1,8 @@
 services:
   # LLM Cache Proxy Server
-  llm-cache:
+  llm-caching:
     build: .
-    container_name: llm-cache-proxy
+    container_name: llm-caching-proxy
     ports:
       - "8000:8000"
     environment:
@@ -21,7 +21,7 @@ services:
         condition: service_healthy
     restart: unless-stopped
     networks:
-      - llm-cache-network
+      - llm-caching-network
     healthcheck:
       test: ["CMD", "python", "-c", "import httpx; httpx.get('http://localhost:8000/health')"]
       interval: 30s
@@ -32,7 +32,7 @@ services:
   # Redis for caching
   redis:
     image: redis:7-alpine
-    container_name: llm-cache-redis
+    container_name: llm-caching-redis
     command: >
       redis-server
       --maxmemory 2gb
@@ -45,7 +45,7 @@ services:
       - redis-data:/data
     restart: unless-stopped
     networks:
-      - llm-cache-network
+      - llm-caching-network
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
@@ -53,7 +53,7 @@ services:
       retries: 5
 
 networks:
-  llm-cache-network:
+  llm-caching-network:
     driver: bridge
 
 volumes:

@@ -1,5 +1,5 @@
 """
-Configuration management for llm-cache.
+Configuration management for llm-caching.
 
 Loads configuration from environment variables and provides a centralized
 Config class for accessing all settings.
@@ -17,7 +17,7 @@ load_dotenv()
 
 class Config:
     """
-    Central configuration management for llm-cache.
+    Central configuration management for llm-caching.
 
     Loads settings from environment variables with sensible defaults.
     All configuration is read-only after initialization.

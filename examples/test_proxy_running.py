@@ -86,7 +86,7 @@ def test_proxy():
     except httpx.ConnectError:
         print("\n✗ Could not connect to proxy server")
         print("\nThe proxy is not running. Start it with:")
-        print("  $ uv run llm-cache-proxy")
+        print("  $ uv run llm-caching-proxy")
         print("\nOr:")
         print("  $ uv run python -m llm_cache.proxy.server")
         return False

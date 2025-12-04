@@ -1,6 +1,6 @@
 # LLM Cache Examples
 
-This directory contains examples demonstrating how to use llm-cache.
+This directory contains examples demonstrating how to use llm-caching.
 
 ## Phase 1: Core Cache Examples
 
@@ -55,7 +55,7 @@ To start the HTTP proxy server:
 
 ```bash
 # Start with default settings (SQLite, port 8000)
-uv run llm-cache-proxy
+uv run llm-caching-proxy
 
 # Or start manually
 uv run python -m llm_cache.proxy.server

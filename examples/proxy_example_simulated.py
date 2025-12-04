@@ -61,7 +61,7 @@ Step 1: Start the proxy server
 ----------------------------------------------------------------------
 In one terminal, run:
 
-    $ uv run llm-cache-proxy
+    $ uv run llm-caching-proxy
 
 Or:
 
@@ -174,7 +174,7 @@ print("=" * 70)
 print(
     """
 Development Workflow:
-1. Start proxy: llm-cache-proxy
+1. Start proxy: llm-caching-proxy
 2. Run your development code (tests, experiments, etc.)
 3. First run: Slow (hits real API)
 4. Subsequent runs: Fast (cache hits)
@@ -244,7 +244,7 @@ async def test_proxy():
         except httpx.ConnectError:
             print("✗ Could not connect to proxy.")
             print("\nTo start the proxy, run in another terminal:")
-            print("  $ uv run llm-cache-proxy")
+            print("  $ uv run llm-caching-proxy")
             return False
 
 

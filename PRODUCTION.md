@@ -20,8 +20,8 @@ The fastest way to deploy LLM Cache with Redis in production:
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-org/llm-cache.git
-cd llm-cache
+git clone https://github.com/your-org/llm-caching.git
+cd llm-caching
 
 # Create environment file
 cp .env.example .env
@@ -40,7 +40,7 @@ docker-compose up -d
 docker-compose ps
 
 # View logs
-docker-compose logs -f llm-cache
+docker-compose logs -f llm-caching
 ```
 
 ### 3. Verify Deployment
@@ -98,8 +98,8 @@ docker run -d \
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
 # Clone repository
-git clone https://github.com/your-org/llm-cache.git
-cd llm-cache
+git clone https://github.com/your-org/llm-caching.git
+cd llm-caching
 
 # Install dependencies
 uv sync
@@ -129,7 +129,7 @@ LLM_CACHE_PROXY_PORT=8000
 
 ### 4. Run as Systemd Service
 
-Create `/etc/systemd/system/llm-cache.service`:
+Create `/etc/systemd/system/llm-caching.service`:
 
 ```ini
 [Unit]
@@ -140,9 +140,9 @@ Requires=redis.service
 [Service]
 Type=simple
 User=llmcache
-WorkingDirectory=/opt/llm-cache
-EnvironmentFile=/opt/llm-cache/.env
-ExecStart=/usr/local/bin/uv run llm-cache-proxy
+WorkingDirectory=/opt/llm-caching
+EnvironmentFile=/opt/llm-caching/.env
+ExecStart=/usr/local/bin/uv run llm-caching-proxy
 Restart=always
 RestartSec=10
 
@@ -154,9 +154,9 @@ Enable and start:
 
 ```bash
 sudo systemctl daemon-reload
-sudo systemctl enable llm-cache
-sudo systemctl start llm-cache
-sudo systemctl status llm-cache
+sudo systemctl enable llm-caching
+sudo systemctl start llm-caching
+sudo systemctl status llm-caching
 ```
 
 ## Redis Configuration
@@ -315,7 +315,7 @@ Add to your monitoring stack:
 
 ```yaml
 scrape_configs:
-  - job_name: 'llm-cache'
+  - job_name: 'llm-caching'
     static_configs:
       - targets: ['localhost:8000']
 ```
@@ -353,7 +353,7 @@ Multiple proxy instances with shared Redis:
 ```yaml
 # docker-compose-scaled.yml
 services:
-  llm-cache:
+  llm-caching:
     build: .
     deploy:
       replicas: 3
@@ -380,9 +380,9 @@ services:
 ```nginx
 upstream llm_cache_backend {
     least_conn;
-    server llm-cache-1:8000;
-    server llm-cache-2:8000;
-    server llm-cache-3:8000;
+    server llm-caching-1:8000;
+    server llm-caching-2:8000;
+    server llm-caching-3:8000;
 }
 
 server {
@@ -447,7 +447,7 @@ redis-cli INFO memory
 curl http://localhost:8000/health | jq
 
 # Check logs
-docker-compose logs llm-cache
+docker-compose logs llm-caching
 
 # Test cache manually
 curl -X POST http://localhost:8000/v1/chat/completions \
@@ -553,6 +553,6 @@ LLM_CACHE_TTL=86400  # 24 hours
 ## Support
 
 For issues and questions:
-- GitHub Issues: https://github.com/your-org/llm-cache/issues
-- Documentation: https://github.com/your-org/llm-cache
+- GitHub Issues: https://github.com/your-org/llm-caching/issues
+- Documentation: https://github.com/your-org/llm-caching
 - Email: support@example.com
