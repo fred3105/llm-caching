@@ -46,7 +46,7 @@ Using [uv](https://github.com/astral-sh/uv) (recommended):
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/llm-cache.git
+git clone https://github.com/fred3105/llm-cache.git
 cd llm-cache
 
 # Install dependencies with uv
@@ -601,23 +601,23 @@ uv run python examples/wrapper_example.py
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│                    Client Application                    │
+│                    Client Application                   │
 │         (OpenAI, Anthropic, or custom LLM SDK)          │
 └────────────────┬────────────────────────────────────────┘
                  │
                  ├─────────────────┬───────────────────────┐
                  │                 │                       │
-          ┌──────▼──────┐   ┌─────▼──────┐         ┌─────▼─────┐
-          │ HTTP Proxy  │   │ SDK Wrapper│         │Direct API │
-          │   Server    │   │  (Decorator)│         │   Call    │
-          └──────┬──────┘   └─────┬──────┘         └───────────┘
+          ┌──────▼──────┐   ┌─────▼───────┐         ┌─────▼──────┐
+          │ HTTP Proxy  │   │ SDK Wrapper │         │ Direct API │
+          │   Server    │   │  (Decorator)│         │    Call    │
+          └──────┬──────┘   └─────┬───────┘         └────────────┘
                  │                 │
                  └────────┬────────┘
                           │
-                   ┌──────▼──────┐
-                   │ Cache Layer │
+                   ┌──────▼───────┐
+                   │ Cache Layer  │
                    │ Key Generator│
-                   └──────┬──────┘
+                   └──────┬───────┘
                           │
                 ┌─────────┴─────────┐
                 │                   │
@@ -664,7 +664,7 @@ Contributions are welcome! Please:
 
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/llm-cache.git
+git clone https://github.com/fred3105/llm-cache.git
 cd llm-cache
 
 # Install development dependencies
@@ -696,8 +696,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Support
 
-- **Issues**: [GitHub Issues](https://github.com/yourusername/llm-cache/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/yourusername/llm-cache/discussions)
+- **Issues**: [GitHub Issues](https://github.com/fred3105/llm-cache/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/fred3105/llm-cache/discussions)
 
 ## Roadmap
 
